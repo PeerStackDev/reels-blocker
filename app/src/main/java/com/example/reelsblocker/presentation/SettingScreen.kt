@@ -40,19 +40,10 @@ import com.example.reelsblocker.ui.theme.BASE
 import com.example.reelsblocker.ui.theme.GRAY
 import com.example.reelsblocker.ui.theme.SUB_BACKGROUND
 
-val accentStyle = TextStyle(
-    fontSize = 24.sp,
-    color = ACCENT
-)
-
-val baseStyle = TextStyle(
-    fontSize = 20.sp,
-    color = BASE
-)
 
 @Preview(showSystemUi = true)
 @Composable
-fun MainScreen() {
+fun SettingScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -65,14 +56,15 @@ fun MainScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            HeaderScr()
-            BodyScr(modifier = Modifier.weight(1f))
+            HeaderSetting()
+            BodySetting(modifier = Modifier.weight(1f))
         }
     }
 }
 
+@Override
 @Composable
-fun HeaderScr() {
+fun HeaderSetting() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(19.dp)
@@ -83,19 +75,19 @@ fun HeaderScr() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "Reels",
+                text = "Наст",
                 fontSize = 48.sp,
                 color = Color.White
             )
             Text(
-                text = "Blocker",
+                text = "ройки",
                 fontSize = 48.sp,
                 color = ACCENT
             )
         }
 
         Text(
-            text = "Время это ресурс - нужно ценить его",
+            text = "Настройки всего и вся",
             color = BASE,
             fontSize = 15.sp,
             textAlign = TextAlign.Center,
@@ -103,62 +95,18 @@ fun HeaderScr() {
         )
 
         // Карточка "Сегодня сэкономлено"
-        Row(
-            modifier = Modifier
-                .background(
-                    color = SUB_BACKGROUND,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .fillMaxWidth()
-                .padding(15.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "Сегодня сэкономлено",
-                    style = baseStyle,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = "X минут(ы)",
-                    style = accentStyle,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = "Это время для вас",
-                    style = baseStyle,
-                    textAlign = TextAlign.Center
-                )
-            }
 
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.padding(10.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.main_screen_logo),
-                    contentDescription = null,
-                    modifier = Modifier.size(70.dp)
-                )
-            }
-        }
     }
 }
 
 @Composable
-fun BodyScr(
+fun BodySetting(
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        // Карточка "AntiReels"
         Row(
             modifier = Modifier
                 .background(
@@ -170,19 +118,12 @@ fun BodyScr(
             horizontalArrangement = Arrangement.spacedBy(15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.anti_reels_logo),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(50.dp)
-            )
-
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 Text(
-                    text = "AntiReels",
+                    text = "Реклама",
                     fontSize = 32.sp,
                     color = Color.White
                 )
@@ -190,11 +131,6 @@ fun BodyScr(
                     text = "Выключено",
                     fontSize = 20.sp,
                     color = GRAY
-                )
-                Text(
-                    text = "Блокировка коротких видео",
-                    fontSize = 15.sp,
-                    style = baseStyle
                 )
             }
 
@@ -212,60 +148,6 @@ fun BodyScr(
             }
         }
 
-        // Карточка "AntiScroll"
-        Row(
-            modifier = Modifier
-                .background(
-                    color = SUB_BACKGROUND,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .fillMaxWidth()
-                .padding(vertical = 30.dp, horizontal = 15.dp),
-            horizontalArrangement = Arrangement.spacedBy(15.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.anti_scroll_logo),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(50.dp)
-            )
-
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(5.dp)
-            ) {
-                Text(
-                    text = "AntiScroll",
-                    fontSize = 32.sp,
-                    color = Color.White
-                )
-                Text(
-                    text = "Выключено",
-                    fontSize = 20.sp,
-                    color = GRAY
-                )
-                Text(
-                    text = "Блокировка бесконечной прокрутки ленты",
-                    maxLines = 2,
-                    fontSize = 15.sp,
-                    style = baseStyle
-                )
-            }
-
-            Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xff1C2736)
-                )
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.strelka),
-                    contentDescription = null,
-                    modifier = Modifier.size(15.dp)
-                )
-            }
-        }
     }
 }
 
