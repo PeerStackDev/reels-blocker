@@ -18,45 +18,24 @@ import com.example.reelsblocker.ui.theme.ReelsBlockerTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
+import com.example.reelsblocker.presentation.MainScreen
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            ReelsBlockerTheme {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color(0xFF010D1D))
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 30.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(SpanStyle(color = Color.White)) {
-                                    append("Reels")
-                                }
-                                withStyle(SpanStyle(color = Color(0xFF29BF9E))) {
-                                    append("Blocker")
-                                }
-                            },
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
+            MainScreen()
         }
     }
 }
