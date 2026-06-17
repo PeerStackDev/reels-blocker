@@ -1,0 +1,91 @@
+package com.example.reelsblocker.presentation
+
+import FooterNav
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.reelsblocker.ui.theme.BACKGROUND
+
+@Preview
+@Composable
+fun App() {
+
+    val navController = rememberNavController()
+
+    Scaffold(
+        containerColor = BACKGROUND,
+        bottomBar = {
+            FooterNav(navController)
+        }
+    ) { padding ->
+
+        NavHost(
+            navController = navController,
+            startDestination = "main",
+            modifier = Modifier.padding(padding)
+        ) {
+
+            composable(
+                route = "main",
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        tween(300)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        tween(300)
+                    )
+                }
+            ) {
+                MainScreen()
+            }
+
+            composable(
+                route = "settings",
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        tween(300)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        tween(300)
+                    )
+                }
+            ) {
+                SettingScreen()
+            }
+
+            composable(
+                route = "info",
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        tween(300)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        tween(300)
+                    )
+                }
+            ) {
+               InfoScreen()
+            }
+        }
+    }
+}
