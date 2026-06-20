@@ -44,9 +44,9 @@ import com.example.reelsblocker.ui.theme.accentStyle
 import com.example.reelsblocker.ui.theme.baseStyle
 
 
-@Preview(showSystemUi = true)
+//@Preview(showSystemUi = true)
 @Composable
-fun MainScreen() {
+fun MainScreen( onNavigateToAntiReels: () -> Unit, onNavigateToAntiScroll: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -60,7 +60,7 @@ fun MainScreen() {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             HeaderScr()
-            BodyScr(modifier = Modifier.weight(1f))
+            BodyScr(modifier = Modifier.weight(1f), onNavigateToAntiReels, onNavigateToAntiScroll)
         }
     }
 }
@@ -146,7 +146,9 @@ fun HeaderScr() {
 
 @Composable
 fun BodyScr(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToAntiReels: () -> Unit,
+    onNavigateToAntiScroll: () -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -194,9 +196,7 @@ fun BodyScr(
             }
 
             Button(
-                onClick = {
-
-                },
+                onClick = onNavigateToAntiReels,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xff1C2736)
                 )
@@ -251,7 +251,7 @@ fun BodyScr(
             }
 
             Button(
-                onClick = {},
+                onClick = onNavigateToAntiScroll,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xff1C2736)
                 )

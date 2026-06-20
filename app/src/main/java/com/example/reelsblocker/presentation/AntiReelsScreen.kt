@@ -43,9 +43,11 @@ import com.example.reelsblocker.ui.theme.baseStyle
 
 import com.example.reelsblocker.presentation.AntiReelsViewModel
 
-@Preview(showSystemUi = true)
+//@Preview(showSystemUi = true)
 @Composable
-fun AntiReelsScreen()
+fun AntiReelsScreen(
+    onBack: () -> Unit
+)
 {
     Box(
         modifier = Modifier
@@ -59,14 +61,20 @@ fun AntiReelsScreen()
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            HeaderARScreen()
+            HeaderARScreen(
+                onBack = onBack
+            )
             BodyARScreen(modifier = Modifier.weight(1f))
         }
     }
 }
 
 @Composable
-fun HeaderARScreen(viewModel: AntiReelsViewModel = viewModel()) {
+fun HeaderARScreen(
+    onBack: () -> Unit,
+    viewModel: AntiReelsViewModel = viewModel()
+)
+{
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -75,9 +83,7 @@ fun HeaderARScreen(viewModel: AntiReelsViewModel = viewModel()) {
     ) {
         // Кнопка возврата в Main
         Button(
-            onClick = {
-
-            },
+            onClick = onBack,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xff1C2736)
             ),
@@ -135,7 +141,7 @@ fun HeaderARScreen(viewModel: AntiReelsViewModel = viewModel()) {
 
         Switch(
             checked = antiReelsBlocked,
-            onCheckedChange = {viewModel::onAntiReelsChanged} ,
+            onCheckedChange = viewModel::onAntiReelsChanged,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
                 checkedTrackColor = ACCENT,
@@ -195,10 +201,10 @@ fun BodyARScreen(
                     color = GRAY
                 )
             }
-            val vkBlocked by viewModel.antiReelsEnabled.collectAsState()
+            val vkBlocked by viewModel.vkBlockEnabled.collectAsState()
             Switch(
                 checked = vkBlocked,
-                onCheckedChange = {viewModel::onVKBlockChanged} ,
+                onCheckedChange = viewModel::onVKBlockChanged,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.White,
                     checkedTrackColor = ACCENT,
@@ -238,7 +244,7 @@ fun BodyARScreen(
             val ytBlocked by viewModel.youTubeBlockEnabled.collectAsState()
             Switch(
                 checked = ytBlocked,
-                onCheckedChange = {viewModel::onYouTubeBlockChanged} ,
+                onCheckedChange = viewModel::onYouTubeBlockChanged,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.White,
                     checkedTrackColor = ACCENT,
@@ -278,7 +284,7 @@ fun BodyARScreen(
             val rtBlocked by viewModel.ruTubeBlockEnabled.collectAsState()
             Switch(
                 checked = rtBlocked,
-                onCheckedChange = {viewModel::onRuTubeBlockChanged} ,
+                onCheckedChange = viewModel::onRuTubeBlockChanged,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.White,
                     checkedTrackColor = ACCENT,
