@@ -156,7 +156,8 @@ fun BodyARScreen(
         text = "Блокировать короткие видео в:",
         style = baseStyle,
         fontSize = 15.sp,
-        textAlign = TextAlign.Left
+        textAlign = TextAlign.Left,
+        modifier = Modifier.fillMaxWidth()
     )
     Column(modifier = Modifier
         .background(
