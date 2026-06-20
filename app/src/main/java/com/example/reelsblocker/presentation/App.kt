@@ -86,6 +86,16 @@ fun App() {
             ) {
                InfoScreen()
             }
+            composable(
+                route = "antireels",
+            ) {
+                AntiReelsScreen()
+            }
+            composable(
+                route = "antiscroll",
+            ) {
+                AntiScrollScreen()
+            }
         }
     }
 }

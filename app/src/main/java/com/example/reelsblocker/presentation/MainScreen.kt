@@ -34,21 +34,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.reelsblocker.R
 import com.example.reelsblocker.ui.theme.ACCENT
 import com.example.reelsblocker.ui.theme.BASE
 import com.example.reelsblocker.ui.theme.GRAY
 import com.example.reelsblocker.ui.theme.SUB_BACKGROUND
+import com.example.reelsblocker.ui.theme.accentStyle
+import com.example.reelsblocker.ui.theme.baseStyle
 
-val accentStyle = TextStyle(
-    fontSize = 24.sp,
-    color = ACCENT
-)
-
-val baseStyle = TextStyle(
-    fontSize = 20.sp,
-    color = BASE
-)
 
 @Preview(showSystemUi = true)
 @Composable
@@ -169,7 +163,8 @@ fun BodyScr(
                 .padding(vertical = 30.dp, horizontal = 15.dp),
             horizontalArrangement = Arrangement.spacedBy(15.dp),
             verticalAlignment = Alignment.CenterVertically
-        ) {
+        )
+        {
             Image(
                 painter = painterResource(id = R.drawable.anti_reels_logo),
                 contentDescription = null,
@@ -199,7 +194,9 @@ fun BodyScr(
             }
 
             Button(
-                onClick = {},
+                onClick = {
+
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xff1C2736)
                 )
