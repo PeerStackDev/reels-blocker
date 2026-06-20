@@ -10,6 +10,8 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -31,6 +33,16 @@ private val LightColorScheme = lightColorScheme(
     onBackground = Color(0xFF1C1B1F),
     onSurface = Color(0xFF1C1B1F),
     */
+)
+
+val accentStyle = TextStyle(
+    fontSize = 24.sp,
+    color = ACCENT
+)
+
+val baseStyle = TextStyle(
+    fontSize = 20.sp,
+    color = BASE
 )
 
 @Composable
