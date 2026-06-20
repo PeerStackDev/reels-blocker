@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -137,6 +140,39 @@ fun HeaderASScreen(viewModel: AntiScrollViewModel = viewModel()) {
             )
         )
     }
+    Row(
+        modifier = Modifier
+            .background(
+                color = SUB_BACKGROUND,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .fillMaxWidth()
+            .padding(vertical = 30.dp, horizontal = 15.dp),
+        horizontalArrangement = Arrangement.spacedBy(40.dp),
+        verticalAlignment = Alignment.CenterVertically
+    )
+    {
+        Icon(Icons.Default.Info, contentDescription = null,
+            tint = Color.White, modifier = Modifier.size(50.dp))
+
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
+            Text(
+                text = "Что блокруется?",
+                fontSize = 20.sp,
+                color = Color.White
+            )
+            Text(
+                text = "Бесконечная прокрутка ленты \n" +
+                        "в социальных сетях ",
+                fontSize = 15.sp,
+                color = GRAY
+            )
+        }
+
+    }
 }
 
 @Composable
@@ -149,7 +185,8 @@ fun BodyASScreen(
         text = "Приложения:",
         style = baseStyle,
         fontSize = 15.sp,
-        textAlign = TextAlign.Left
+        textAlign = TextAlign.Left,
+        modifier = Modifier.fillMaxWidth()
     )
     Column(modifier = Modifier
         .background(
