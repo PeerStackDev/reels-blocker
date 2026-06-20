@@ -1,5 +1,6 @@
 package com.example.reelsblocker.presentation
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -64,7 +65,8 @@ fun AntiScrollScreen(
 }
 
 @Composable
-fun HeaderASScreen(onBack: () -> Unit,viewModel: AntiScrollViewModel = viewModel()) {
+fun HeaderASScreen(onBack: () -> Unit,
+                   viewModel: AntiScrollViewModel = viewModel()) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -106,6 +108,7 @@ fun HeaderASScreen(onBack: () -> Unit,viewModel: AntiScrollViewModel = viewModel
         verticalAlignment = Alignment.CenterVertically
     )
     {
+        val antiScrollEnabled by viewModel.antiScrollEnabled.collectAsState()
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(5.dp)
@@ -115,16 +118,26 @@ fun HeaderASScreen(onBack: () -> Unit,viewModel: AntiScrollViewModel = viewModel
                 fontSize = 20.sp,
                 color = GRAY
             )
-            Text(
-                text = "Выключено",
-                fontSize = 32.sp,
-                color = GRAY
-            )
-            Text(
-                text = "Бесконечная лента не ограничена",
-                fontSize = 15.sp,
-                style = baseStyle
-            )
+            Crossfade(
+                targetState = antiScrollEnabled,
+                label = "status"
+            ) { enabled ->
+                Text(
+                    text = if (enabled) "Включено" else "Выключено",
+                    fontSize = 32.sp,
+                    color = if (enabled) ACCENT else GRAY
+                )
+            }
+            Crossfade(
+                targetState = antiScrollEnabled,
+                label = "status"
+            ) { enabled ->
+                Text(
+                    text = if (enabled) "Бесконечная лента ограничена" else "Бесконечная лента не ограничена",
+                    fontSize = 15.sp,
+                    style = baseStyle
+                )
+            }
         }
 
         val antiScrollBlocked by viewModel.antiScrollEnabled.collectAsState()

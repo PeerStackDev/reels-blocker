@@ -1,5 +1,6 @@
 package com.example.reelsblocker.presentation
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -116,6 +117,7 @@ fun HeaderARScreen(
         verticalAlignment = Alignment.CenterVertically
     )
     {
+        val antiReelsEnabled by viewModel.antiReelsEnabled.collectAsState()
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(5.dp)
@@ -125,16 +127,28 @@ fun HeaderARScreen(
                 fontSize = 20.sp,
                 color = GRAY
             )
-            Text(
-                text = "Выключено",
-                fontSize = 32.sp,
-                color = GRAY
-            )
-            Text(
-                text = "Короткие видео не заблокированы",
-                fontSize = 15.sp,
-                style = baseStyle
-            )
+            Crossfade(
+                targetState = antiReelsEnabled,
+                label = "status"
+            ) { enabled ->
+                Text(
+                    text = if (enabled) "Включено" else "Выключено",
+                    fontSize = 32.sp,
+                    color = if (enabled) ACCENT else GRAY
+                )
+            }
+            Crossfade(
+                targetState = antiReelsEnabled,
+                label = "status"
+            ) { enabled ->
+                Text(
+                    text = if (enabled) "Короткие видео заблокированы"
+                    else "Короткие видео не заблокированы",
+                    fontSize = 15.sp,
+                    style = baseStyle
+                )
+            }
+
         }
 
         val antiReelsBlocked by viewModel.antiReelsEnabled.collectAsState()
