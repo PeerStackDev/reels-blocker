@@ -39,9 +39,11 @@ import com.example.reelsblocker.ui.theme.accentStyle
 import com.example.reelsblocker.ui.theme.baseStyle
 
 
-@Preview(showSystemUi = true)
+//@Preview(showSystemUi = true)
 @Composable
-fun AntiScrollScreen()
+fun AntiScrollScreen(
+    onBack: () -> Unit
+)
 {
     Box(
         modifier = Modifier
@@ -55,14 +57,14 @@ fun AntiScrollScreen()
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            HeaderASScreen()
+            HeaderASScreen(onBack = onBack)
             BodyASScreen(modifier = Modifier.weight(1f))
         }
     }
 }
 
 @Composable
-fun HeaderASScreen(viewModel: AntiScrollViewModel = viewModel()) {
+fun HeaderASScreen(onBack: () -> Unit,viewModel: AntiScrollViewModel = viewModel()) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -71,9 +73,7 @@ fun HeaderASScreen(viewModel: AntiScrollViewModel = viewModel()) {
     ) {
         // Кнопка возврата в Main
         Button(
-            onClick = {
-
-            },
+            onClick = onBack,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xff1C2736)
             ),
@@ -131,7 +131,7 @@ fun HeaderASScreen(viewModel: AntiScrollViewModel = viewModel()) {
 
         Switch(
             checked = antiScrollBlocked,
-            onCheckedChange = {viewModel::onAntiScrollChanged} ,
+            onCheckedChange = viewModel::onAntiScrollChanged,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
                 checkedTrackColor = ACCENT,
@@ -227,7 +227,7 @@ fun BodyASScreen(
             val vkScrollBlocked by viewModel.vkScrollBlockEnabled.collectAsState()
             Switch(
                 checked = vkScrollBlocked,
-                onCheckedChange = {viewModel::onVKScrollBlockChanged} ,
+                onCheckedChange = viewModel::onVKScrollBlockChanged,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.White,
                     checkedTrackColor = ACCENT,
@@ -267,7 +267,7 @@ fun BodyASScreen(
             val ytScrollBlocked by viewModel.youTubeScrollBlockEnabled.collectAsState()
             Switch(
                 checked = ytScrollBlocked,
-                onCheckedChange = {viewModel::onYouTubeScrollBlockChanged} ,
+                onCheckedChange = viewModel::onYouTubeScrollBlockChanged,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.White,
                     checkedTrackColor = ACCENT,

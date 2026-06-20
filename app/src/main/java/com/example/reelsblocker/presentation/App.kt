@@ -47,8 +47,16 @@ fun App() {
                         tween(300)
                     )
                 }
-            ) {
-                MainScreen()
+            )
+            {
+                MainScreen(
+                    onNavigateToAntiReels = {
+                        navController.navigate("antireels")
+                    },
+                    onNavigateToAntiScroll = {
+                        navController.navigate("antiscroll")
+                    }
+                )
             }
 
             composable(
@@ -88,13 +96,22 @@ fun App() {
             }
             composable(
                 route = "antireels",
-            ) {
-                AntiReelsScreen()
+            )
+                {
+                AntiReelsScreen(
+                    onBack = {
+                        navController.popBackStack()
+                    }
+                )
             }
             composable(
                 route = "antiscroll",
             ) {
-                AntiScrollScreen()
+                AntiScrollScreen(
+                    onBack = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }
