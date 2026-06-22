@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ReelsBlocker</string>
+    <string name="accessibility_description">Сервис для блокировки коротких видео (VK Клипы, YouTube Shorts, RuTube).</string>
 </resources>
