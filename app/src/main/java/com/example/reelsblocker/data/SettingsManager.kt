@@ -28,4 +28,21 @@ class SettingsManager(context: Context) {
         if (isRuTubeBlocked()) list.add("ru.rutube.app")
         return list
     }
+
+    // === AntiScroll ===
+    fun isAntiScrollEnabled(): Boolean = prefs.getBoolean("anti_scroll", false)
+    fun isVkScrollBlocked(): Boolean = prefs.getBoolean("vk_scroll_block", false)
+    fun isYouTubeScrollBlocked(): Boolean = prefs.getBoolean("youtube_scroll_block", false)
+
+    fun setAntiScrollEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean("anti_scroll", enabled).apply()
+    }
+
+    fun setVkScrollBlocked(enabled: Boolean) {
+        prefs.edit().putBoolean("vk_scroll_block", enabled).apply()
+    }
+
+    fun setYouTubeScrollBlocked(enabled: Boolean) {
+        prefs.edit().putBoolean("youtube_scroll_block", enabled).apply()
+    }
 }

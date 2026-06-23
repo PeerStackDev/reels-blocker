@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">ReelsBlocker</string>
     <string name="accessibility_description">Сервис для блокировки коротких видео (VK Клипы, YouTube Shorts, RuTube).</string>
+    <string name="scroll_accessibility_description">
+        Сервис для блокировки бесконечной прокрутки ленты в социальных сетях.
+        Необходим для работы функции AntiScroll.
+    </string>
 </resources>
