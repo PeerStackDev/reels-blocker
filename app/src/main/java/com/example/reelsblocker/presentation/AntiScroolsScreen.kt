@@ -173,7 +173,7 @@ fun HeaderASScreen(onBack: () -> Unit,
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
             Text(
-                text = "Что блокруется?",
+                text = "Что блокируется?",
                 fontSize = 20.sp,
                 color = Color.White
             )
