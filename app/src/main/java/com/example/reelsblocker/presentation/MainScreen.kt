@@ -25,6 +25,8 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +36,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.reelsblocker.R
 import com.example.reelsblocker.ui.theme.ACCENT
@@ -148,7 +152,9 @@ fun HeaderScr() {
 fun BodyScr(
     modifier: Modifier = Modifier,
     onNavigateToAntiReels: () -> Unit,
-    onNavigateToAntiScroll: () -> Unit
+    onNavigateToAntiScroll: () -> Unit,
+    viewModel: AntiReelsViewModel = viewModel()
+
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -178,16 +184,25 @@ fun BodyScr(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
+                val antiReelsEnabled by viewModel.antiReelsEnabled.collectAsStateWithLifecycle()
                 Text(
                     text = "AntiReels",
                     fontSize = 32.sp,
                     color = Color.White
                 )
-                Text(
-                    text = "Выключено",
-                    fontSize = 20.sp,
-                    color = GRAY
-                )
+                if (antiReelsEnabled) {
+                    Text(
+                        text = "Включено",
+                        fontSize = 20.sp,
+                        color = ACCENT
+                    )
+                } else {
+                    Text(
+                        text = "Выключено",
+                        fontSize = 20.sp,
+                        color = GRAY
+                    )
+                }
                 Text(
                     text = "Блокировка коротких видео",
                     fontSize = 15.sp,

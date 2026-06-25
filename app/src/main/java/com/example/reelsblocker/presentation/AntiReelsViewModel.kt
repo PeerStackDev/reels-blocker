@@ -44,3 +44,4 @@ class AntiReelsViewModel(application: Application) : AndroidViewModel(applicatio
         settings.setRuTubeBlocked(value)
     }
 }
+

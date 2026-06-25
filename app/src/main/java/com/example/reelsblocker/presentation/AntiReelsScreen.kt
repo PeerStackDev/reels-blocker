@@ -92,7 +92,7 @@ fun HeaderARScreen(
                 .align(Alignment.CenterStart)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.strelka),
+                painter = painterResource(id = R.drawable.strelka_left),
                 contentDescription = null,
                 modifier = Modifier.size(25.dp)
             )

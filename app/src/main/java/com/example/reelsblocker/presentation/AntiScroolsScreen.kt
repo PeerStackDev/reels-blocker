@@ -17,6 +17,8 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -35,12 +37,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.reelsblocker.R
 import com.example.reelsblocker.ui.theme.ACCENT
 import com.example.reelsblocker.ui.theme.GRAY
+import com.example.reelsblocker.ui.theme.ReelsBlockerTheme
 import com.example.reelsblocker.ui.theme.SUB_BACKGROUND
 import com.example.reelsblocker.ui.theme.accentStyle
 import com.example.reelsblocker.ui.theme.baseStyle
 
 
-//@Preview(showSystemUi = true)
 @Composable
 fun AntiScrollScreen(
     onBack: () -> Unit
@@ -83,7 +85,7 @@ fun HeaderASScreen(onBack: () -> Unit,
                 .align(Alignment.CenterStart)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.strelka),
+                painter = painterResource(id = R.drawable.strelka_left),
                 contentDescription = null,
                 modifier = Modifier.size(25.dp)
             )
@@ -291,5 +293,4 @@ fun BodyASScreen(
         }
 
     }
-
 }

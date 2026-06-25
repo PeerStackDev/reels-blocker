@@ -7,16 +7,35 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.reelsblocker.data.AccessibilityHelper
 import com.example.reelsblocker.ui.theme.BACKGROUND
 
 @Preview
 @Composable
 fun App() {
+
+    var showPermissionDialog by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+
+
+    // Проверяем права при запуске
+    LaunchedEffect(Unit) {
+        if (!AccessibilityHelper.isAccessibilityServiceEnabled(context)) {
+            showPermissionDialog = true
+        }
+    }
 
     val navController = rememberNavController()
 
@@ -114,5 +133,15 @@ fun App() {
                 )
             }
         }
+    }
+    // Диалог с просьбой выдать права
+    if (showPermissionDialog) {
+        PermissionDialog(
+            onDismiss = { showPermissionDialog = false },
+            onOpenSettings = {
+                AccessibilityHelper.openAccessibilitySettings(context)
+                showPermissionDialog = false
+            }
+        )
     }
 }
