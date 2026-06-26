@@ -1,9 +1,6 @@
 package com.example.reelsblocker.presentation
 
 
-import FooterNav
-import android.widget.Button
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,29 +9,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.reelsblocker.R
 import com.example.reelsblocker.ui.theme.ACCENT
 import com.example.reelsblocker.ui.theme.BASE
 import com.example.reelsblocker.ui.theme.GRAY
@@ -123,34 +109,30 @@ fun BodySetting(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 Text(
-                    text = "Реклама",
+                    text = "Функция",
                     fontSize = 32.sp,
                     color = Color.White
                 )
                 Text(
-                    text = "Выключено",
+                    text = "Важная",
                     fontSize = 20.sp,
                     color = GRAY
                 )
             }
 
-            Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xff1C2736)
+            Switch(
+                checked = false,
+                onCheckedChange = { /* пустышка */ },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.White,
+                    checkedTrackColor = ACCENT,
+                    uncheckedThumbColor = Color.White,
+                    uncheckedTrackColor = GRAY
                 )
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.strelka),
-                    contentDescription = null,
-                    modifier = Modifier.size(15.dp)
-                )
-            }
+            )
         }
 
     }
 }
 
 
-
-// Попытка сделать навигатор, пока неудачно
