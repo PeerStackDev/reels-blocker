@@ -31,9 +31,14 @@ class MainAccessibilityService : AccessibilityService() {
 
         if (packageName != VK_PACKAGE) return
 
-        // === ВАЖНО: Передаём WINDOW_STATE_CHANGED в ShortsBlocker ===
+        // === Передаём WINDOW_STATE_CHANGED в ShortsBlocker ===
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            shortsBlocker.onWindowStateChanged(event)
+            shortsBlocker.onWindowStateChanged(event, settings)
+        }
+
+        // === НОВОЕ: Передаём WINDOW_CONTENT_CHANGED в ShortsBlocker ===
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+            shortsBlocker.onWindowContentChanged(event, settings)
         }
 
         // Делегируем клики
