@@ -1,14 +1,13 @@
 package com.example.reelsblocker.data
 
 import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.GestureDescription
-import android.graphics.Path
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
 
 /**
- * Обработчик блокировки клипов (AntiReels)
+ * Обработчик блокировки клипов и шопсов (AntiReels)
+ * Использует GLOBAL_ACTION_BACK с ожиданием открытия окна клипа
  */
 class ShortsBlocker(private val service: AccessibilityService) {
 
@@ -17,14 +16,21 @@ class ShortsBlocker(private val service: AccessibilityService) {
         private const val VK_PACKAGE = "com.vkontakte.android"
 
         private var lastBlockTime = 0L
-        private const val BLOCK_COOLDOWN = 2000L
-        private const val SWIPE_DELAY = 500L
-        private const val MAX_RETRY_ATTEMPTS = 3
+        private const val BLOCK_COOLDOWN = 0L
+
+        // Флаг: ждём ли мы открытия клипа
+        private var waitingForClipOpen = false
+        private var clipOpenTime = 0L
+
+        // Максимальное время ожидания открытия клипа (мс)
+        private const val MAX_WAIT_FOR_OPEN = 1000L
+
+        // Задержка после открытия клипа перед BACK (мс)
+        private const val BACK_DELAY_AFTER_OPEN = 200L
     }
 
     /**
      * Обрабатывает событие клика
-     * @return true если событие обработано (заблокировано)
      */
     fun handleEvent(event: AccessibilityEvent, settings: SettingsManager): Boolean {
         if (!settings.isAntiReelsEnabled()) return false
@@ -44,98 +50,90 @@ class ShortsBlocker(private val service: AccessibilityService) {
         // Клик по вкладке "Клипы"
         if (text == "Клипы" || desc == "Клипы") {
             Log.d(TAG, "🚫 User clicked Clips tab!")
-            blockClips()
+            startBlocking()
             return true
         }
 
         // Клик по клипу
         if (desc.contains("Клип") && desc != "Клипы") {
-            Log.d(TAG, "🚫 User clicked clip: $desc")
-            blockClips()
+            Log.d(TAG, " User clicked clip: $desc")
+            startBlocking()
+            return true
+        }
+
+        // Клик по Шопсу (несколько вариантов)
+        if (desc.contains("Шопс", ignoreCase = true) ||
+            desc.contains("Shops", ignoreCase = true) ||
+            desc.contains("Товар", ignoreCase = true) ||
+            desc.contains("Магазин", ignoreCase = true)) {
+            Log.d(TAG, "🚫 User clicked shops: $desc")
+            startBlocking()
             return true
         }
 
         return false
     }
 
-    private fun blockClips() {
+    /**
+     * Запускает процесс блокировки: ждёт открытия клипа, потом BACK
+     */
+    private fun startBlocking() {
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastBlockTime < BLOCK_COOLDOWN) {
+            Log.d(TAG, "⏳ Cooldown active, skipping")
             return
         }
         lastBlockTime = currentTime
 
-        Log.d(TAG, " BLOCKING CLIPS! Starting block sequence...")
+        Log.d(TAG, "🚫 BLOCKING! Waiting for clip to open...")
 
-        Toast.makeText(service, "🚫 VK Клипы заблокированы", Toast.LENGTH_SHORT).show()
+        Toast.makeText(service, "🚫 Заблокировано", Toast.LENGTH_SHORT).show()
 
+        // Устанавливаем флаг ожидания
+        waitingForClipOpen = true
+        clipOpenTime = currentTime
+
+        // Страховка: если за 3 секунды клип не откроется — всё равно сделаем BACK
         Thread {
             try {
-                Thread.sleep(SWIPE_DELAY)
-
-                var swipeSuccess = false
-                var attempts = 0
-
-                while (!swipeSuccess && attempts < MAX_RETRY_ATTEMPTS) {
-                    attempts++
-                    Log.d(TAG, " Attempt $attempts/$MAX_RETRY_ATTEMPTS")
-
-                    swipeSuccess = performBackSwipeWithRetry()
-
-                    if (!swipeSuccess && attempts < MAX_RETRY_ATTEMPTS) {
-                        Thread.sleep(200)
-                    }
+                Thread.sleep(MAX_WAIT_FOR_OPEN)
+                if (waitingForClipOpen) {
+                    Log.d(TAG, "⏰ Timeout! Forcing BACK...")
+                    waitingForClipOpen = false
+                    doBack()
                 }
-
-                if (!swipeSuccess) {
-                    Log.d(TAG, "❌ Swipe failed, using GLOBAL_ACTION_BACK")
-                    service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-                }
-
-            } catch (e: InterruptedException) {
-                Log.e(TAG, "Block sequence interrupted", e)
-            }
+            } catch (e: InterruptedException) {}
         }.start()
     }
 
-    private fun performBackSwipeWithRetry(): Boolean {
-        val displayMetrics = service.resources.displayMetrics
-        val screenWidth = displayMetrics.widthPixels
-        val screenHeight = displayMetrics.heightPixels
+    /**
+     * Вызывается из MainAccessibilityService при WINDOW_STATE_CHANGED
+     */
+    fun onWindowStateChanged(event: AccessibilityEvent) {
+        if (!waitingForClipOpen) return
 
-        val startX = 0f
-        val startY = screenHeight / 2f
-        val endX = screenWidth / 3f
-        val endY = screenHeight / 2f
+        val packageName = event.packageName?.toString() ?: return
+        if (packageName != VK_PACKAGE) return
 
-        val path = Path()
-        path.moveTo(startX, startY)
-        path.lineTo(endX, endY)
+        Log.d(TAG, "📱 Window state changed: ${event.className}")
 
-        val gesture = GestureDescription.Builder()
-            .addStroke(GestureDescription.StrokeDescription(path, 0, 300))
-            .build()
+        // Клип открылся! Делаем BACK с небольшой задержкой
+        waitingForClipOpen = false
 
-        var completed = false
+        Thread {
+            try {
+                Thread.sleep(BACK_DELAY_AFTER_OPEN)
+                Log.d(TAG, "✅ Clip opened, doing BACK...")
+                doBack()
+            } catch (e: InterruptedException) {}
+        }.start()
+    }
 
-        service.dispatchGesture(gesture, object : android.accessibilityservice.AccessibilityService.GestureResultCallback() {
-            override fun onCompleted(gestureDescription: GestureDescription?) {
-                Log.d(TAG, "✅ Back swipe completed")
-                completed = true
-            }
-
-            override fun onCancelled(gestureDescription: GestureDescription?) {
-                Log.d(TAG, "❌ Back swipe cancelled")
-                completed = false
-            }
-        }, null)
-
-        var waitTime = 0
-        while (!completed && waitTime < 500) {
-            Thread.sleep(50)
-            waitTime += 50
-        }
-
-        return completed
+    /**
+     * Выполняет GLOBAL_ACTION_BACK
+     */
+    private fun doBack() {
+        val success = service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+        Log.d(TAG, if (success) "✅ BACK executed" else " BACK failed")
     }
 }

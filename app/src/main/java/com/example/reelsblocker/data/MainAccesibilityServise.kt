@@ -4,10 +4,6 @@ import android.accessibilityservice.AccessibilityService
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 
-/**
- * Главный сервис специальных возможностей.
- * Делегирует обработку событий отдельным обработчикам.
- */
 class MainAccessibilityService : AccessibilityService() {
 
     companion object {
@@ -15,7 +11,6 @@ class MainAccessibilityService : AccessibilityService() {
         private const val VK_PACKAGE = "com.vkontakte.android"
     }
 
-    // Обработчики
     private lateinit var shortsBlocker: ShortsBlocker
     private lateinit var scrollBlocker: ScrollBlocker
     private lateinit var settings: SettingsManager
@@ -24,7 +19,6 @@ class MainAccessibilityService : AccessibilityService() {
         super.onServiceConnected()
         Log.d(TAG, "✅ MainAccessibilityService connected!")
 
-        // Инициализируем обработчики
         shortsBlocker = ShortsBlocker(this)
         scrollBlocker = ScrollBlocker(this)
         settings = SettingsManager(this)
@@ -35,15 +29,19 @@ class MainAccessibilityService : AccessibilityService() {
 
         val packageName = event.packageName?.toString() ?: return
 
-        // Работаем только с VK
         if (packageName != VK_PACKAGE) return
 
-        // Делегируем событие обработчикам
-        // Если один обработал - выходим
+        // === ВАЖНО: Передаём WINDOW_STATE_CHANGED в ShortsBlocker ===
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            shortsBlocker.onWindowStateChanged(event)
+        }
+
+        // Делегируем клики
         if (shortsBlocker.handleEvent(event, settings)) {
             return
         }
 
+        // Делегируем скролл
         if (scrollBlocker.handleEvent(event, settings)) {
             return
         }

@@ -16,7 +16,7 @@ class ScrollBlocker(private val service: AccessibilityService) {
         private const val VK_PACKAGE = "com.vkontakte.android"
 
         private var lastScrollBlockTime = 0L
-        private const val SCROLL_BLOCK_COOLDOWN = 3000L
+        private const val SCROLL_BLOCK_COOLDOWN = 1000L
     }
 
     /**
