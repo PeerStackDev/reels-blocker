@@ -23,7 +23,8 @@ class AntiReelsViewModel(application: Application) : AndroidViewModel(applicatio
     private val _ruTubeBlockEnabled = MutableStateFlow(settings.isRuTubeBlocked())
     val ruTubeBlockEnabled: StateFlow<Boolean> = _ruTubeBlockEnabled.asStateFlow()
 
-    // Методы вызова из UI (сигнатуры оставили точно такими же, чтобы UI не ломался)
+    val dialogManager = DialogStateManager()
+
     fun onAntiReelsChanged(value: Boolean) {
         _antiReelsEnabled.value = value
         settings.setAntiReelsEnabled(value)
@@ -35,13 +36,30 @@ class AntiReelsViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun onYouTubeBlockChanged(value: Boolean) {
-        _youTubeBlockEnabled.value = value
-        settings.setYouTubeBlocked(value)
+        if (value) {
+            dialogManager.showMessageBox(
+                title = "Временно недоступно",
+                message = "Блокировка YouTube временно не работает."
+            )
+            _youTubeBlockEnabled.value = settings.isYouTubeBlocked()
+        } else {
+            _youTubeBlockEnabled.value = false
+            settings.setYouTubeBlocked(false)
+        }
     }
 
     fun onRuTubeBlockChanged(value: Boolean) {
-        _ruTubeBlockEnabled.value = value
-        settings.setRuTubeBlocked(value)
+        if (value) {
+            dialogManager.showMessageBox(
+                title = "Временно недоступно",
+                message = "Блокировка RuTube временно не работает."
+            )
+            _youTubeBlockEnabled.value = settings.isYouTubeBlocked()
+        } else {
+            _youTubeBlockEnabled.value = false
+            settings.setYouTubeBlocked(false)
+        }
     }
+
 }
 

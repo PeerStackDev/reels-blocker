@@ -45,4 +45,18 @@ class SettingsManager(context: Context) {
     fun setYouTubeScrollBlocked(enabled: Boolean) {
         prefs.edit().putBoolean("youtube_scroll_block", enabled).apply()
     }
+
+    // == Settings или режимы ==
+
+    fun isScheduleEnabled(): Boolean = prefs.getBoolean("schedule_enabled", false)
+    fun isScreenTimeEnabled(): Boolean = prefs.getBoolean("screen_time_enabled", false)
+
+    fun setScheduleEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean("schedule_enabled", enabled).apply()
+    }
+
+    fun setScreenTimeEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean("screen_time_enabled", enabled).apply()
+    }
+
 }

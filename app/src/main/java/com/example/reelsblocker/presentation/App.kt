@@ -1,5 +1,6 @@
 package com.example.reelsblocker.presentation
 
+import android.app.Application
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -25,7 +27,9 @@ fun App() {
 
     var showPermissionDialog by remember { mutableStateOf(false) }
 
+
     val context = LocalContext.current
+    val application = context.applicationContext as Application
 
 
     // Проверяем права при запуске
@@ -91,7 +95,10 @@ fun App() {
                     )
                 }
             ) {
-                SettingScreen()
+                val viewModel: SettingViewModel = viewModel(
+                    factory = SettingViewModelFactory(application)
+                )
+                SettingScreen(viewModel = viewModel)
             }
 
             composable(

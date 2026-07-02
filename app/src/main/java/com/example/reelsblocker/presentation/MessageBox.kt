@@ -1,20 +1,17 @@
 package com.example.reelsblocker.presentation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,27 +26,16 @@ import com.example.reelsblocker.ui.theme.ACCENT
 import com.example.reelsblocker.ui.theme.BACKGROUND
 import com.example.reelsblocker.ui.theme.GRAY
 import com.example.reelsblocker.ui.theme.SUB_BACKGROUND
-
-@Preview(
-    showSystemUi = true,
-    showBackground = true,
-    backgroundColor = 0xFF010D1D
-)@Composable
-fun PermissionDialogPreview() {
-    // Оборачиваем в тему и поверхность для правильного отображения
-        Surface {
-            PermissionDialog(
-                onDismiss = { /* Действие для кнопки "Позже" */ },
-                onOpenSettings = { /* Действие для кнопки "Открыть настройки" */ }
-            )
-        }
-
-}
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @Composable
-fun PermissionDialog(
-    onDismiss: () -> Unit,
-    onOpenSettings: () -> Unit
+fun MessageBox(
+    title: String,
+    message: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -73,17 +59,8 @@ fun PermissionDialog(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    imageVector = Icons.Default.Warning,
-                    contentDescription = null,
-                    tint = ACCENT,
-                    modifier = Modifier
-                        .size(56.dp)
-                        .padding(bottom = 8.dp)
-                )
-
                 Text(
-                    text = "Требуется разрешение",
+                    text = title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -91,27 +68,36 @@ fun PermissionDialog(
                 )
 
                 Text(
-                    text = "Для работы ReelsBlocker приложения необходимо включить сервис специальных возможностей. Без этого блокировка не будет работать.",
+                    text = message,
                     fontSize = 16.sp,
                     color = GRAY,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
 
                 Button(
-                    onClick = onOpenSettings,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                    onClick = onConfirm,
+                    modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = SUB_BACKGROUND,
                         contentColor = Color.White,
-                        disabledContainerColor = SUB_BACKGROUND
+                        disabledContainerColor = ACCENT
                     )
-                ) {
-                    Text("Открыть настройки")
-                }
 
+                ) {
+                    Text("Закрыть")
+                }
             }
         }
     }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun MessageBoxPreview() {
+    MessageBox(
+        title = "Заголовок",
+        message = "Текст сообщения",
+        onConfirm = {},
+        onDismiss = {}
+    )
 }

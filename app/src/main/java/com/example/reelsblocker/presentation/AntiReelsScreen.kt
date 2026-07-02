@@ -172,6 +172,11 @@ fun BodyARScreen(
     viewModel: AntiReelsViewModel = viewModel()
 )
 {
+    val ytBlocked by viewModel.youTubeBlockEnabled.collectAsState()
+    val rtBlocked by viewModel.ruTubeBlockEnabled.collectAsState()
+    val showDialog by viewModel.dialogManager.showDialog.collectAsState()
+    val dialogTitle by viewModel.dialogManager.dialogTitle.collectAsState()
+    val dialogMessage by viewModel.dialogManager.dialogMessage.collectAsState()
     Text(
         text = "Блокировать короткие видео в:",
         style = baseStyle,
@@ -310,5 +315,12 @@ fun BodyARScreen(
 
 
     }
-
+    if (showDialog) {
+        MessageBox(
+            title = dialogTitle,
+            message = dialogMessage,
+            onConfirm = { viewModel.dialogManager.onConfirm() },
+            onDismiss = { viewModel.dialogManager.onDismiss() }
+        )
+    }
 }
