@@ -47,6 +47,7 @@ import com.example.reelsblocker.presentation.AntiReelsViewModel
 //@Preview(showSystemUi = true)
 @Composable
 fun AntiReelsScreen(
+    viewModel: AntiReelsViewModel,
     onBack: () -> Unit
 )
 {
@@ -63,17 +64,22 @@ fun AntiReelsScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             HeaderARScreen(
+                viewModel = viewModel,
                 onBack = onBack
             )
-            BodyARScreen(modifier = Modifier.weight(1f))
+            BodyARScreen(
+                modifier = Modifier.weight(1f),
+                viewModel = viewModel
+            )
         }
     }
 }
 
 @Composable
 fun HeaderARScreen(
+    viewModel: AntiReelsViewModel,
     onBack: () -> Unit,
-    viewModel: AntiReelsViewModel = viewModel()
+
 )
 {
     Box(
@@ -169,7 +175,7 @@ fun HeaderARScreen(
 @Composable
 fun BodyARScreen(
     modifier: Modifier = Modifier,
-    viewModel: AntiReelsViewModel = viewModel()
+    viewModel: AntiReelsViewModel
 )
 {
     val ytBlocked by viewModel.youTubeBlockEnabled.collectAsState()

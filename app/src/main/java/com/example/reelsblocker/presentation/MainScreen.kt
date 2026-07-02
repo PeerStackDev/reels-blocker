@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +38,11 @@ import com.example.reelsblocker.ui.theme.baseStyle
 
 //@Preview(showSystemUi = true)
 @Composable
-fun MainScreen( onNavigateToAntiReels: () -> Unit, onNavigateToAntiScroll: () -> Unit) {
+fun MainScreen(
+    antiScrollViewModel: AntiScrollViewModel,
+    antiReelsViewModel: AntiReelsViewModel,
+    onNavigateToAntiReels: () -> Unit,
+    onNavigateToAntiScroll: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -51,7 +56,11 @@ fun MainScreen( onNavigateToAntiReels: () -> Unit, onNavigateToAntiScroll: () ->
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             HeaderScr()
-            BodyScr(modifier = Modifier.weight(1f), onNavigateToAntiReels, onNavigateToAntiScroll)
+            BodyScr(modifier = Modifier.weight(1f),
+                onNavigateToAntiReels,
+                onNavigateToAntiScroll,
+                antiReelsViewModel,
+                antiScrollViewModel )
         }
     }
 }
@@ -140,7 +149,8 @@ fun BodyScr(
     modifier: Modifier = Modifier,
     onNavigateToAntiReels: () -> Unit,
     onNavigateToAntiScroll: () -> Unit,
-    viewModel: AntiReelsViewModel = viewModel()
+    viewModelARV: AntiReelsViewModel,
+    viewModelASV: AntiScrollViewModel
 
 ) {
     Column(
@@ -171,7 +181,7 @@ fun BodyScr(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                val antiReelsEnabled by viewModel.antiReelsEnabled.collectAsStateWithLifecycle()
+                val antiReelsEnabled by viewModelARV.antiReelsEnabled.collectAsState()
                 Text(
                     text = "AntiReels",
                     fontSize = 32.sp,
@@ -239,11 +249,20 @@ fun BodyScr(
                     fontSize = 32.sp,
                     color = Color.White
                 )
-                Text(
-                    text = "Выключено",
-                    fontSize = 20.sp,
-                    color = GRAY
-                )
+                val enabled by viewModelASV.antiScrollEnabled.collectAsState()
+                if (enabled) {
+                    Text(
+                        text = "Включено",
+                        fontSize = 20.sp,
+                        color = ACCENT
+                    )
+                } else {
+                    Text(
+                        text = "Выключено",
+                        fontSize = 20.sp,
+                        color = GRAY
+                    )
+                }
                 Text(
                     text = "Блокировка бесконечной прокрутки ленты",
                     maxLines = 2,

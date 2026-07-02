@@ -3,6 +3,8 @@ package com.example.reelsblocker.presentation
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.reelsblocker.data.SettingsManager
 import com.example.reelsblocker.ui.theme.ACCENT
 import com.example.reelsblocker.ui.theme.GRAY
@@ -49,5 +51,18 @@ class AntiScrollViewModel(application: Application) : AndroidViewModel(applicati
     fun onYouTubeScrollBlockChanged(value: Boolean) {
         _youTubeScrollBlockEnabled.value = value
         settings.setYouTubeScrollBlocked(value)
+    }
+}
+
+class AntiScrollViewModelFactory(
+    private val application: Application
+) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(AntiScrollViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return AntiScrollViewModel(application) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel")
     }
 }

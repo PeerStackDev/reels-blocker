@@ -2,6 +2,8 @@ package com.example.reelsblocker.presentation
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.reelsblocker.data.SettingsManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -62,4 +64,18 @@ class AntiReelsViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
 }
+class AntiReelsViewModelFactory(
+    private val application: Application
+) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(AntiReelsViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return AntiReelsViewModel(application) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+
+
 

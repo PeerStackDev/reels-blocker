@@ -31,6 +31,19 @@ fun App() {
     val context = LocalContext.current
     val application = context.applicationContext as Application
 
+    // для Антирилс
+    val antiReelsViewModel: AntiReelsViewModel = viewModel(
+        factory = AntiReelsViewModelFactory(application)
+    )
+    // для антискролл
+    val antiScrollViewModel: AntiScrollViewModel = viewModel(
+        factory = AntiScrollViewModelFactory(application)
+    )
+    // для настроек(режимов)
+    val viewModel: SettingViewModel = viewModel(
+        factory = SettingViewModelFactory(application)
+    )
+
 
     // Проверяем права при запуске
     LaunchedEffect(Unit) {
@@ -71,6 +84,8 @@ fun App() {
             )
             {
                 MainScreen(
+                    antiScrollViewModel = antiScrollViewModel,
+                    antiReelsViewModel = antiReelsViewModel,
                     onNavigateToAntiReels = {
                         navController.navigate("antireels")
                     },
@@ -95,9 +110,6 @@ fun App() {
                     )
                 }
             ) {
-                val viewModel: SettingViewModel = viewModel(
-                    factory = SettingViewModelFactory(application)
-                )
                 SettingScreen(viewModel = viewModel)
             }
 
@@ -123,6 +135,7 @@ fun App() {
             )
                 {
                 AntiReelsScreen(
+                    viewModel = antiReelsViewModel,
                     onBack = {
                         navController.popBackStack()
                     }
@@ -132,7 +145,9 @@ fun App() {
                 route = "antiscroll",
             ) {
                 AntiScrollScreen(
+                    viewModel = antiScrollViewModel,
                     onBack = {
+
                         navController.popBackStack()
                     }
                 )

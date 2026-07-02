@@ -45,6 +45,7 @@ import com.example.reelsblocker.ui.theme.baseStyle
 
 @Composable
 fun AntiScrollScreen(
+    viewModel: AntiScrollViewModel,
     onBack: () -> Unit
 )
 {
@@ -60,15 +61,18 @@ fun AntiScrollScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            HeaderASScreen(onBack = onBack)
-            BodyASScreen(modifier = Modifier.weight(1f))
+            HeaderASScreen(
+                onBack = onBack,
+                viewModel = viewModel
+            )
+            BodyASScreen(modifier = Modifier.weight(1f), viewModel = viewModel)
         }
     }
 }
 
 @Composable
 fun HeaderASScreen(onBack: () -> Unit,
-                   viewModel: AntiScrollViewModel = viewModel()) {
+                   viewModel: AntiScrollViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -193,7 +197,7 @@ fun HeaderASScreen(onBack: () -> Unit,
 @Composable
 fun BodyASScreen(
     modifier: Modifier = Modifier,
-    viewModel: AntiScrollViewModel = viewModel()
+    viewModel: AntiScrollViewModel
 )
 {
     Text(
