@@ -11,121 +11,232 @@ class ShortsBlocker(private val service: AccessibilityService) {
     companion object {
         private const val TAG = "ShortsBlocker"
         private const val VK_PACKAGE = "com.vkontakte.android"
+        private const val RUTUBE_PACKAGE = "rtb.mobile.android"
 
         private var lastBlockTime = 0L
-        private const val BLOCK_COOLDOWN = 1000L
+        private const val BLOCK_COOLDOWN = 500L
 
         private var shouldBlockClipWindow = false
 
         private const val MAX_WAIT_FOR_OPEN = 1000L
         private const val BACK_DELAY_AFTER_OPEN = 200L
 
-        private val CLIP_KEYWORDS = listOf(
-            "Клип", "Клипы", "Clip", "Clips",
+        private val RUTUBE_CLIP_KEYWORDS = listOf(
             "Short", "Shorts",
-            "Reel", "Reels",
-            "Шоп", "Shop", "Товар", "Магазин"
+            "Шортс", "Шортсы",
+            "Короткое видео",
+            "Лента"
         )
     }
 
     fun handleEvent(event: AccessibilityEvent, settings: SettingsManager): Boolean {
         if (!settings.isAntiReelsEnabled()) return false
-        if (!settings.isVkBlocked()) return false
         if (event.eventType != AccessibilityEvent.TYPE_VIEW_CLICKED) return false
 
+        val packageName = event.packageName?.toString() ?: return false
         val text = event.text?.joinToString("") ?: ""
         val desc = event.contentDescription?.toString() ?: ""
 
-        Log.d(TAG, "CLICK: text='$text', desc='$desc'")
+        Log.d(TAG, "CLICK [$packageName]: text='$text', desc='$desc'")
 
-        if (desc == "Главная" || desc.startsWith("Главная ")) {
-            return false
+        // === Проверяем URL в тексте клика ===
+        if (packageName == RUTUBE_PACKAGE && settings.isRuTubeBlocked()) {
+            if (containsShortsUrl(text) || containsShortsUrl(desc)) {
+                Log.d(TAG, "🚫 Rutube Shorts URL detected in click: text='$text', desc='$desc'")
+                requestBlocking()
+                return true
+            }
         }
 
-        val combinedText = "$text $desc"
-        val isClipRelated = CLIP_KEYWORDS.any { keyword ->
-            combinedText.contains(keyword, ignoreCase = true)
+        // === VK ===
+        if (packageName == VK_PACKAGE && settings.isVkBlocked()) {
+            if (desc == "Клипы" || text == "Клипы") {
+                Log.d(TAG, "🚫 VK: clicked Clips tab")
+                requestBlocking()
+                return true
+            }
         }
 
-        if (isClipRelated) {
-            Log.d(TAG, "🚫 Clip-related click: $combinedText")
-            requestBlocking()
-            return true
+        // === Rutube ===
+        if (packageName == RUTUBE_PACKAGE && settings.isRuTubeBlocked()) {
+            val combinedText = "$text $desc"
+
+            val isShortRelated = RUTUBE_CLIP_KEYWORDS.any { keyword ->
+                combinedText.contains(keyword, ignoreCase = true)
+            }
+
+            val isNavigation = desc == "Главная" || desc == "Подписки" ||
+                    desc == "Моя Rutube" || text == "Главная"
+
+            if (isShortRelated && !isNavigation) {
+                Log.d(TAG, "🚫 Rutube short-related click: text='$text', desc='$desc'")
+                requestBlocking()
+                return true
+            }
         }
 
         return false
     }
 
-    /**
-     * Обрабатывает WINDOW_STATE_CHANGED (открытие нового Activity)
-     */
     fun onWindowStateChanged(event: AccessibilityEvent, settings: SettingsManager) {
         if (!settings.isAntiReelsEnabled()) return
-        if (!settings.isVkBlocked()) return
 
         val packageName = event.packageName?.toString() ?: return
-        if (packageName != VK_PACKAGE) return
-
         val className = event.className?.toString() ?: ""
+        val text = event.text?.joinToString(", ") ?: ""
 
-        // Проверяем, является ли это окном клипов (отдельное Activity)
-        val isClipWindow = className.contains("Clip", ignoreCase = true) ||
-                className.contains("Shorts", ignoreCase = true) ||
-                className.contains("Reels", ignoreCase = true) ||
-                className.contains("VerticalVideo", ignoreCase = true)
+        Log.d(TAG, "🔍 WINDOW_STATE_CHANGED: package='$packageName', class='$className', text='$text'")
 
-        if (isClipWindow) {
-            Log.d(TAG, "📱 Clip Activity detected: $className")
-            handleClipDetected()
+        // === Проверяем URL в тексте события ===
+        if (packageName == RUTUBE_PACKAGE && settings.isRuTubeBlocked()) {
+            if (containsShortsUrl(text)) {
+                Log.d(TAG, "🚫 Rutube Shorts URL detected in window: $text")
+                handleClipDetected()
+                return
+            }
         }
-    }
 
-    /**
-     * Обрабатывает WINDOW_CONTENT_CHANGED (изменение контента внутри Activity)
-     * Это нужно для случая, когда клип открывается внутри MainActivity как оверлей
-     */
-    fun onWindowContentChanged(event: AccessibilityEvent, settings: SettingsManager) {
-        if (!settings.isAntiReelsEnabled()) return
-        if (!settings.isVkBlocked()) return
+        // === VK ===
+        if (packageName == VK_PACKAGE && settings.isVkBlocked()) {
+            val isClipWindow = className.contains("Clip", ignoreCase = true) ||
+                    className.contains("Shorts", ignoreCase = true) ||
+                    className.contains("Reels", ignoreCase = true) ||
+                    className.contains("VerticalVideo", ignoreCase = true)
 
-        val packageName = event.packageName?.toString() ?: return
-        if (packageName != VK_PACKAGE) return
+            if (isClipWindow) {
+                Log.d(TAG, "📱 VK Clip Activity detected: $className")
+                handleClipDetected()
+            }
+        }
 
-        // Проверяем содержимое экрана на признаки клипа
-        service.rootInActiveWindow?.let { rootNode ->
-            if (isClipScreen(rootNode)) {
-                Log.d(TAG, "📱 Clip screen detected via content check!")
+        // === Rutube ===
+        if (packageName == RUTUBE_PACKAGE && settings.isRuTubeBlocked()) {
+            val isShortWindow = className.contains("Short", ignoreCase = true) ||
+                    className.contains("VerticalVideo", ignoreCase = true) ||
+                    className.contains("PlayerActivity", ignoreCase = true)
+
+            if (isShortWindow) {
+                Log.d(TAG, "📱 Rutube Short Activity detected: $className")
                 handleClipDetected()
             }
         }
     }
 
-    /**
-     * Проверяет, открыт ли на экране клип
-     * Признаки клипа: кнопки "Нравится" + "Комментарий" + "Поделиться" + "Ещё"
-     * (все четыре кнопки вместе характерны для вертикальных видео)
-     */
-    private fun isClipScreen(rootNode: AccessibilityNodeInfo): Boolean {
-        // Ищем характерные признаки клипа
-        val hasLike = findNodeByText(rootNode, "Нравится") != null
-        val hasComment = findNodeByText(rootNode, "Комментарий") != null ||
-                findNodeByText(rootNode, "комментариев") != null
-        val hasShare = findNodeByText(rootNode, "Поделиться") != null
-        val hasMore = findNodeByText(rootNode, "Ещё") != null
+    fun onWindowContentChanged(event: AccessibilityEvent, settings: SettingsManager) {
+        if (!settings.isAntiReelsEnabled()) return
 
-        // Все четыре кнопки вместе — признак клипа
-        val allButtonsPresent = hasLike && hasComment && hasShare && hasMore
+        val packageName = event.packageName?.toString() ?: return
+        val text = event.text?.joinToString(", ") ?: ""
 
-        if (allButtonsPresent) {
-            Log.d(TAG, "✅ Clip buttons found: like=$hasLike, comment=$hasComment, share=$hasShare, more=$hasMore")
+        // === Проверяем URL в тексте события ===
+        if (packageName == RUTUBE_PACKAGE && settings.isRuTubeBlocked()) {
+            if (containsShortsUrl(text)) {
+                Log.d(TAG, "🚫 Rutube Shorts URL detected in content change: $text")
+                handleClipDetected()
+                return
+            }
         }
 
-        return allButtonsPresent
+        // === VK ===
+        if (packageName == VK_PACKAGE && settings.isVkBlocked()) {
+            service.rootInActiveWindow?.let { rootNode ->
+                if (isVKClipScreen(rootNode)) {
+                    Log.d(TAG, "📱 VK Clip screen detected via content!")
+                    handleClipDetected()
+                }
+            }
+        }
+
+        // === Rutube ===
+        if (packageName == RUTUBE_PACKAGE && settings.isRuTubeBlocked()) {
+            Thread {
+                try {
+                    Thread.sleep(800)
+
+                    val rutubeRoot = findRutubeWindowRoot()
+                    if (rutubeRoot != null) {
+                        if (isRutubeShortScreen(rutubeRoot)) {
+                            Log.d(TAG, "📱 Rutube Short screen detected via content!")
+                            handleClipDetected()
+                        }
+                    }
+                } catch (e: InterruptedException) {
+                    Log.e(TAG, "Interrupted", e)
+                }
+            }.start()
+        }
     }
 
     /**
-     * Ищет узел по тексту (рекурсивно)
+     * Проверяет, содержит ли текст URL с "shorts"
      */
+    private fun containsShortsUrl(text: String): Boolean {
+        if (text.isEmpty()) return false
+
+        // Проверяем различные варианты URL с shorts
+        val patterns = listOf(
+            "rutube.ru/shorts/",
+            "rutube.ru/short/",
+            "/shorts/",
+            "/short/",
+            "shorts?video=",
+            "short?video="
+        )
+
+        val containsUrl = patterns.any { pattern ->
+            text.contains(pattern, ignoreCase = true)
+        }
+
+        if (containsUrl) {
+            Log.d(TAG, "✅ Found shorts URL pattern in: ${text.take(100)}")
+        }
+
+        return containsUrl
+    }
+
+    private fun findRutubeWindowRoot(): AccessibilityNodeInfo? {
+        try {
+            val windows = service.windows
+
+            for (window in windows) {
+                val windowPackage = window.root?.packageName?.toString() ?: ""
+
+                if (windowPackage == RUTUBE_PACKAGE) {
+                    val root = window.root
+                    if (root != null) {
+                        return root
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error finding Rutube window", e)
+        }
+
+        return null
+    }
+
+    private fun isVKClipScreen(rootNode: AccessibilityNodeInfo): Boolean {
+        val hasLike = findNodeByDesc(rootNode, "Нравится") != null
+
+        if (hasLike) {
+            Log.d(TAG, "✅ VK clip detected: like button found")
+        }
+
+        return hasLike
+    }
+
+    private fun isRutubeShortScreen(rootNode: AccessibilityNodeInfo): Boolean {
+        val hasLikeByDesc = findNodeByDesc(rootNode, "Нравится") != null
+        val hasLikeByText = findNodeByText(rootNode, "Нравится") != null
+        val hasLike = hasLikeByDesc || hasLikeByText
+
+        if (hasLike) {
+            Log.d(TAG, "✅ Rutube short detected: likeByDesc=$hasLikeByDesc, likeByText=$hasLikeByText")
+        }
+
+        return hasLike
+    }
+
     private fun findNodeByText(node: AccessibilityNodeInfo, text: String): AccessibilityNodeInfo? {
         val nodeText = node.text?.toString() ?: ""
         val nodeDesc = node.contentDescription?.toString() ?: ""
@@ -144,9 +255,22 @@ class ShortsBlocker(private val service: AccessibilityService) {
         return null
     }
 
-    /**
-     * Обрабатывает обнаружение клипа (из любого источника)
-     */
+    private fun findNodeByDesc(node: AccessibilityNodeInfo, desc: String): AccessibilityNodeInfo? {
+        val nodeDesc = node.contentDescription?.toString() ?: ""
+
+        if (nodeDesc.contains(desc, ignoreCase = true)) {
+            return node
+        }
+
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            val result = findNodeByDesc(child, desc)
+            if (result != null) return result
+        }
+
+        return null
+    }
+
     private fun handleClipDetected() {
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastBlockTime < BLOCK_COOLDOWN) {
@@ -183,7 +307,7 @@ class ShortsBlocker(private val service: AccessibilityService) {
             try {
                 Thread.sleep(MAX_WAIT_FOR_OPEN)
                 if (shouldBlockClipWindow) {
-                    Log.d(TAG, "⏰ Timeout! Forcing BACK...")
+                    Log.d(TAG, " Timeout! Forcing BACK...")
                     shouldBlockClipWindow = false
                     doBack()
                 }

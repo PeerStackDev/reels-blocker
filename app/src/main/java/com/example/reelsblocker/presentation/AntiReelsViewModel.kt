@@ -51,16 +51,8 @@ class AntiReelsViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun onRuTubeBlockChanged(value: Boolean) {
-        if (value) {
-            dialogManager.showMessageBox(
-                title = "Временно недоступно",
-                message = "Блокировка RuTube временно не работает."
-            )
-            _youTubeBlockEnabled.value = settings.isYouTubeBlocked()
-        } else {
-            _youTubeBlockEnabled.value = false
-            settings.setYouTubeBlocked(false)
-        }
+        _ruTubeBlockEnabled.value = value
+        settings.setRuTubeBlocked(value)
     }
 
 }
