@@ -255,46 +255,5 @@ fun BodyASScreen(
                 )
             )
         }
-
-        Row (
-            horizontalArrangement = Arrangement.spacedBy(15.dp),
-            verticalAlignment = Alignment.CenterVertically
-        )
-        {
-            Image(
-                painter = painterResource(id = R.drawable.youtube_logo),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(50.dp)
-            )
-
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(5.dp)
-            ) {
-                Text(
-                    text = "YouTube",
-                    fontSize = 15.sp,
-                    color = Color.White
-                )
-                Text(
-                    text = "Бесконечная лента",
-                    fontSize = 15.sp,
-                    color = GRAY
-                )
-            }
-            val ytScrollBlocked by viewModel.youTubeScrollBlockEnabled.collectAsState()
-            Switch(
-                checked = ytScrollBlocked,
-                onCheckedChange = viewModel::onYouTubeScrollBlockChanged,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = ACCENT,
-                    uncheckedThumbColor = Color.White,
-                    uncheckedTrackColor = GRAY
-                )
-            )
-        }
-
     }
 }
